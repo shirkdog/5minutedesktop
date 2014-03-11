@@ -15,3 +15,6 @@ Contents
   i3
   fluxbox
 
+Todo/
+  Work this into an ISO file to automate the entire process, based on FreeBSD 10 pkgng repo
+

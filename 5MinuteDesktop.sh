@@ -2,10 +2,10 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 0.4
+# Version: 0.5
 #
 # Based on FreeBSD 10 default install with ports
-# Tested on VirtualBox
+# Tested on VirtualBox with Guest Drivers Installed
 # 
 # Copyright (c) 2014, Michael Shirk
 # All rights reserved.
@@ -86,9 +86,9 @@ else if ($WM == "fluxbox") then
 endif
 
 #Vbox editions if running under virtualbox
-set VBOX = `dmesg|grep -oe VirtualBox`
+set VBOX = `dmesg|grep -oe VBOX|uniq`
 
-if ( "$VBOX" == "VirtualBox" ) then
+if ( "$VBOX" == "VBOX" ) then
 	pkg install -y virtualbox-ose-additions
 endif
 
