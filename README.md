@@ -1,7 +1,7 @@
 5minutedesktop
 ==========
 
-Script to install a working desktop (web-browser,office applications) in 5 minutes.
+Script to install a working FreeBSD desktop (web-browser,office applications) in 5 minutes.
 
 Contents
 ---------------------------------
