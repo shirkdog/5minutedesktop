@@ -91,7 +91,7 @@ endif
 #if ( "$VBOX" == "VBOX" ) then
 #        pkg install -y virtualbox-ose-additions
 #endif
-pkg install xorg-drivers
+pkg install -y xorg-drivers
 
 #Other stuff to make life eaiser
 pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-curses 
