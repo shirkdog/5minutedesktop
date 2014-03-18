@@ -89,7 +89,8 @@ endif
 set VBOX = `dmesg|grep -oe VBOX|uniq`
 
 if ( "$VBOX" == "VBOX" ) then
-	pkg install -y virtualbox-ose-additions
+        cd /usr/ports/emulators/virtualbox-ose-additions
+        make -DBATCH install clean
 endif
 
 #Other stuff to make life eaiser
