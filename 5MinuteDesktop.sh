@@ -4,7 +4,7 @@
 #
 # Version: 0.5
 #
-# Based on FreeBSD 10 default install with ports
+# Based on FreeBSD 10 default install with ports and src
 # Tested on VirtualBox with Guest Drivers Installed
 # 
 # Copyright (c) 2014, Michael Shirk
