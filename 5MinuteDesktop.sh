@@ -86,10 +86,13 @@ else if ($WM == "fluxbox") then
 endif
 
 #Vbox additions are not working, installing failsafe drivers
-#Vbox additions if running under virtualbox
 #set VBOX = `dmesg|grep -oe VBOX|uniq`
 #if ( "$VBOX" == "VBOX" ) then
 #        pkg install -y virtualbox-ose-additions
+#	cat << EOF >> /etc/rc.conf
+#vboxguest_enable="YES"
+#vboxservice_enable="YES"
+#EOF
 #endif
 pkg install -y xorg-drivers
 
@@ -102,8 +105,6 @@ echo 'linux_load="YES"' >> /boot/loader.conf
 
 #rc updates for X
 cat << EOF >> /etc/rc.conf
-vboxguest_enable="YES"
-vboxservice_enable="YES"
 hald_enable="YES"
 dbus_enable="YES"
 EOF
