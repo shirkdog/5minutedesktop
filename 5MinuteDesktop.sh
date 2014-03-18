@@ -85,12 +85,13 @@ else if ($WM == "fluxbox") then
 	end
 endif
 
-#Vbox editions if running under virtualbox
-set VBOX = `dmesg|grep -oe VBOX|uniq`
-
-if ( "$VBOX" == "VBOX" ) then
-        pkg install -y virtualbox-ose-additions
-endif
+#Vbox additions are not working, installing failsafe drivers
+#Vbox additions if running under virtualbox
+#set VBOX = `dmesg|grep -oe VBOX|uniq`
+#if ( "$VBOX" == "VBOX" ) then
+#        pkg install -y virtualbox-ose-additions
+#endif
+pkg install xorg-drivers
 
 #Other stuff to make life eaiser
 pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-curses 
