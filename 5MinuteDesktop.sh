@@ -2,9 +2,9 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 0.5
+# Version: 0.6
 #
-# Based on FreeBSD 10 default install with ports and src
+# Based on FreeBSD 10 default install with ports
 # Tested on VirtualBox with Guest Drivers Installed
 # 
 # Copyright (c) 2014, Michael Shirk
@@ -85,16 +85,19 @@ else if ($WM == "fluxbox") then
 	end
 endif
 
-#Vbox additions are not working, installing failsafe drivers
-#set VBOX = `dmesg|grep -oe VBOX|uniq`
-#if ( "$VBOX" == "VBOX" ) then
-#        pkg install -y virtualbox-ose-additions
-#	cat << EOF >> /etc/rc.conf
-#vboxguest_enable="YES"
-#vboxservice_enable="YES"
-#EOF
-#endif
+#If running on Vbox, setup services
+lling failsafe drivers
+set VBOX = `dmesg|grep -oe VBOX|uniq`
+if ( "$VBOX" == "VBOX" ) then
+        pkg install -y virtualbox-ose-additions
+cat << EOF >> /etc/rc.conf
+vboxguest_enable="YES"
+vboxservice_enable="YES"
+EOF
+else
+#Otherwise, install failsafe drivers with vesa
 pkg install -y xorg-drivers
+endif
 
 #Other stuff to make life eaiser
 pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-curses 
