@@ -100,7 +100,7 @@ pkg install -y xorg-drivers
 endif
 
 #Other stuff to make life eaiser
-pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-curses 
+pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-curses en-aspell en-hunspell
 
 #necessary for linux compat and chrome/firefox
 echo 'sem_load="YES"' >> /boot/loader.conf
