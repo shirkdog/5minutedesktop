@@ -82,7 +82,6 @@ else if ($WM == "fluxbox") then
 endif
 
 #If running on Vbox, setup services
-lling failsafe drivers
 set VBOX = `dmesg|grep -oe VBOX|uniq`
 if ( "$VBOX" == "VBOX" ) then
         pkg install -y virtualbox-ose-additions
@@ -116,7 +115,7 @@ kern.ipc.shm_allow_removed=1
 hw.syscons.kbd_reboot=0
 # fix for HDA sound playing too fast/too slow. only if needed.
 dev.pcm.0.play.vchanrate=44100
-dev.pcm.0.rec.vchanrate=44100
+#dev.pcm.0.rec.vchanrate=44100
 EOF
 
 #reboot for all modules and services to start
