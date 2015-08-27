@@ -2,12 +2,12 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 0.6
+# Version: 0.8
 #
-# Based on FreeBSD 10 default install with ports
+# Tested on FreeBSD/HardenedBSD default install with ports
 # Tested on VirtualBox with Guest Drivers Installed
 # 
-# Copyright (c) 2014, Michael Shirk
+# Copyright (c) 2015, Michael Shirk
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -55,16 +55,14 @@ if ("$WM" == "NONE") then
 	exit 13
 endif
 
-#pkgng needs to be bootstrapped. The
-#work around is to install the port
-cd /usr/ports/ports-mgmt/pkg
-make -DBATCH install clean
+#pkgng needs to be bootstrapped. 
+env ASSUME_ALWAYS_YES=YES pkg bootstrap
 
 #Update Packages
-pkg update -f 
+env ASSUME_ALWAYS_YES=YES pkg update -f
 
 #Install everything
-pkg install -y xorg-server xinit xscreensaver xf86-input-keyboard xf86-input-mouse 
+pkg install -y xorg-server xinit xauth xscreensaver xf86-input-keyboard xf86-input-mouse 
 
 #WM Specific i3 or fluxbox
 if ( $WM == "i3" ) then
@@ -101,6 +99,9 @@ pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-cu
 echo 'sem_load="YES"' >> /boot/loader.conf
 echo 'linux_load="YES"' >> /boot/loader.conf
 
+#replaces systemd on FreeBSD with faster booting
+echo 'autoboot_delay="1"' >> /boot/loader.conf
+
 #rc updates for X
 cat << EOF >> /etc/rc.conf
 hald_enable="YES"
@@ -115,8 +116,43 @@ kern.ipc.shm_allow_removed=1
 hw.syscons.kbd_reboot=0
 # fix for HDA sound playing too fast/too slow. only if needed.
 dev.pcm.0.play.vchanrate=44100
-#dev.pcm.0.rec.vchanrate=44100
 EOF
+
+#If running on HardenedBSD, configure applications to work.
+set HARD = `sysctl hardening.version`
+if ( $status == 0 ) then
+	#install secadm from HardenedBSD pkg repo
+	pkg install -y secadm
+
+	#setup secadm module to load at boot
+	echo 'secadm_load="YES"' >> /boot/loader.conf
+
+	#create the current application rules for secadm
+	#based on rules from https://github.com/HardenedBSD/secadm-rules
+	cat << EOF >> /etc/secadm.rules
+{
+	"applications": [
+	{
+		path: "/usr/local/bin/chrome",
+		features: { 
+	      	  mprotect: false,
+	      	  pageexec: false,
+		}
+	},
+	]
+}
+EOF
+
+	chmod 0500 /etc/secadm.rules
+	chflags schg /etc/secadm.rules
+
+	#set secadm rules at bootime
+	cat << EOF >> /etc/rc.local
+#load secadm rules
+/usr/local/bin/secadm -c /etc/secadm.rules set
+EOF
+chmod 500 /etc/rc.local
+fi
 
 #reboot for all modules and services to start
 reboot
