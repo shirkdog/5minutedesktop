@@ -133,7 +133,14 @@ if ( $status == 0 ) then
 {
 	"applications": [
 	{
-		path: "/usr/local/bin/chrome",
+		path: "/usr/local/share/chromium/chrome",
+		features: { 
+	      	  mprotect: false,
+	      	  pageexec: false,
+		}
+	},
+	{
+		path: "/usr/local/lib/libreoffice/program/soffice.bin",
 		features: { 
 	      	  mprotect: false,
 	      	  pageexec: false,
