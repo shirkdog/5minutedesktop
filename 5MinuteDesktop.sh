@@ -156,7 +156,7 @@ EOF
 	#set secadm rules at bootime
 	cat << EOF >> /etc/rc.local
 #load secadm rules
-/usr/local/bin/secadm -c /etc/secadm.rules set
+/usr/local/sbin/secadm -c /etc/secadm.rules set
 EOF
 chmod 500 /etc/rc.local
 fi
