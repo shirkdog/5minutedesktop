@@ -2,7 +2,7 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 0.8
+# Version: 0.9
 #
 # Tested on FreeBSD/HardenedBSD default install with ports
 # Tested on VirtualBox with Guest Drivers Installed
