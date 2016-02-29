@@ -2,12 +2,12 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 0.9
+# Version: 1.0
 #
 # Tested on FreeBSD/HardenedBSD default install with ports
 # Tested on VirtualBox with Guest Drivers Installed
 # 
-# Copyright (c) 2015, Michael Shirk
+# Copyright (c) 2016, Michael Shirk
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -128,25 +128,19 @@ if ( $status == 0 ) then
 	echo 'secadm_load="YES"' >> /boot/loader.conf
 
 	#create the current application rules for secadm
-	#based on rules from https://github.com/HardenedBSD/secadm-rules
+	#based on v0.3 rules from https://github.com/HardenedBSD/secadm-rules
 	cat << EOF >> /etc/secadm.rules
-{
-	"applications": [
-	{
-		path: "/usr/local/share/chromium/chrome",
-		features: { 
-	      	  mprotect: false,
-	      	  pageexec: false,
-		}
-	},
-	{
-		path: "/usr/local/lib/libreoffice/program/soffice.bin",
-		features: { 
-	      	  mprotect: false,
-	      	  pageexec: false,
-		}
-	},
-	]
+secadm {
+        pax {
+                path: "/usr/local/share/chromium/chrome",
+                  mprotect: false,
+                  pageexec: false,
+        },
+        pax {
+                path: "/usr/local/lib/libreoffice/program/soffice.bin",
+                  mprotect: false,
+                  pageexec: false,
+        },
 }
 EOF
 
