@@ -2,7 +2,7 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 1.0
+# Version: 1.1
 #
 # Tested on FreeBSD/HardenedBSD default install with ports
 # Tested on VirtualBox with Guest Drivers Installed
@@ -129,7 +129,7 @@ if ( $status == 0 ) then
 
 	#create the current application rules for secadm
 	#based on v0.3 rules from https://github.com/HardenedBSD/secadm-rules
-	cat << EOF >> /etc/secadm.rules
+	cat << EOF >> /usr/local/etc/secadm.rules
 secadm {
         pax {
                 path: "/usr/local/share/chromium/chrome",
@@ -144,15 +144,13 @@ secadm {
 }
 EOF
 
-	chmod 0500 /etc/secadm.rules
-	chflags schg /etc/secadm.rules
+	chmod 0500 /usr/local/etc/secadm.rules
+	chflags schg /usr/local/etc/secadm.rules
 
-	#set secadm rules at bootime
-	cat << EOF >> /etc/rc.local
-#load secadm rules
-/usr/local/sbin/secadm -c /etc/secadm.rules set
+	#set secadm to start at bootime
+	cat << EOF >> /etc/rc.conf
+secadm_enable="YES"
 EOF
-chmod 500 /etc/rc.local
 fi
 
 #reboot for all modules and services to start
