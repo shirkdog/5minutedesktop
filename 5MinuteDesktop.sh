@@ -4,7 +4,7 @@
 #
 # Version: 1.5
 #
-# Tested on FreeBSD/HardenedBSD default install with ports
+# Tested on FreeBSD/HardenedBSD default install with ports and source code
 # Tested on VirtualBox with Guest Drivers Installed
 # Tested on and works poorly with NVIDIA Cards (default X drivers are used)
 # 
@@ -120,7 +120,7 @@ EOF
 #If running on HardenedBSD, configure applications to work.
 set HARD = `sysctl hardening.version`
 if ( $status == 0 ) then
-	#install secadm from secadm src (requires HardenedBSD Source to be install)
+	#install secadm from secadm src (requires HardenedBSD Source to be installed)
 	pkg install git-lite
 	cd /usr
 	git clone https://github.com/hardenedbsd/secadm.git
