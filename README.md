@@ -24,7 +24,7 @@ How To
   
   or fluxbox instead of i3
 
-  The last part of the script will reboot the system, and once the system is back on, you can login as a regular user and type the following (Note: a display manager is not used, as it is unnecessary to have a process running the background when there is a more efficient way to start the desktop)
+  The last part of the script will reboot the system, and once the system is back on, you can login as a regular user and type the following (Note: a display manager is not used, as it is unnecessary to have a process running in the background when there is a more efficient way to start the desktop)
   
   `startx &; lock -pn`
 
