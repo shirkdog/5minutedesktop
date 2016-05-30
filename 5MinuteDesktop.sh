@@ -2,10 +2,11 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 1.1
+# Version: 1.5
 #
 # Tested on FreeBSD/HardenedBSD default install with ports
 # Tested on VirtualBox with Guest Drivers Installed
+# Tested on and works poorly with NVIDIA Cards (default X drivers are used)
 # 
 # Copyright (c) 2016, Michael Shirk
 # All rights reserved.
@@ -62,7 +63,7 @@ env ASSUME_ALWAYS_YES=YES pkg bootstrap
 env ASSUME_ALWAYS_YES=YES pkg update -f
 
 #Install everything
-pkg install -y xorg-server xinit xauth xscreensaver xf86-input-keyboard xf86-input-mouse 
+pkg install -y xorg-server xinit xterm xauth xscreensaver xf86-input-keyboard xf86-input-mouse 
 
 #WM Specific i3 or fluxbox
 if ( $WM == "i3" ) then
@@ -79,21 +80,21 @@ else if ($WM == "fluxbox") then
 	end
 endif
 
-#If running on Vbox, setup services
 set VBOX = `dmesg|grep -oe VBOX|uniq`
+#If running on Vbox, setup services
 if ( "$VBOX" == "VBOX" ) then
         pkg install -y virtualbox-ose-additions
-cat << EOF >> /etc/rc.conf
-vboxguest_enable="YES"
-vboxservice_enable="YES"
-EOF
+	sysrc vboxguest_enable="YES"
+	sysrc vboxservice_enable="YES"
 else
 #Otherwise, install failsafe drivers with vesa
 pkg install -y xorg-drivers
 endif
 
-#Other stuff to make life eaiser
-pkg install -y rxvt-unicode zsh sudo chromium tmux libreoffice gnupg pinentry-curses en-aspell en-hunspell
+#Other stuff to make life easier, looping in case packages change
+foreach i ( rxvt-unicode zsh sudo chromium tmux libreoffice4 gnupg pinentry-curses enaspell en-hunspell ) 
+pkg install -y $i
+end
 
 #necessary for linux compat and chrome/firefox
 echo 'sem_load="YES"' >> /boot/loader.conf
@@ -103,10 +104,8 @@ echo 'linux_load="YES"' >> /boot/loader.conf
 echo 'autoboot_delay="1"' >> /boot/loader.conf
 
 #rc updates for X
-cat << EOF >> /etc/rc.conf
-hald_enable="YES"
-dbus_enable="YES"
-EOF
+sysrc hald_enable="YES"
+sysrc dbus_enable="YES"
 
 #sysctl values for chromium,audio and disabling CTRL+ALT+DELETE
 cat << EOF >> /etc/sysctl.conf
@@ -121,8 +120,12 @@ EOF
 #If running on HardenedBSD, configure applications to work.
 set HARD = `sysctl hardening.version`
 if ( $status == 0 ) then
-	#install secadm from HardenedBSD pkg repo
-	pkg install -y secadm
+	#install secadm from secadm src (requires HardenedBSD Source to be install)
+	pkg install git-lite
+	cd /usr
+	git clone https://github.com/hardenedbsd/secadm.git
+	cd secadm/
+	git pull && make && make install
 
 	#setup secadm module to load at boot
 	echo 'secadm_load="YES"' >> /boot/loader.conf
@@ -148,9 +151,7 @@ EOF
 	chflags schg /usr/local/etc/secadm.rules
 
 	#set secadm to start at bootime
-	cat << EOF >> /etc/rc.conf
-secadm_enable="YES"
-EOF
+	sysrc secadm_enable="YES"
 fi
 
 #reboot for all modules and services to start
