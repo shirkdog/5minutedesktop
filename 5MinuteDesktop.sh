@@ -120,8 +120,12 @@ EOF
 #If running on HardenedBSD, configure applications to work.
 set HARD = `sysctl hardening.version`
 if ( $status == 0 ) then
-	#install secadm package
-	pkg install -y secadm
+	#install secadm from secadm src (requires HardenedBSD Source to be installed)
+ 	pkg install -y git-lite
+ 	cd /usr
+ 	git clone https://github.com/hardenedbsd/secadm.git
+ 	cd /usr/secadm/
+ 	git pull && make && make install
 
 	#setup secadm module to load at boot
 	echo 'secadm_load="YES"' >> /boot/loader.conf
