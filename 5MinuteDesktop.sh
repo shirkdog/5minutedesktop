@@ -117,42 +117,6 @@ hw.syscons.kbd_reboot=0
 dev.pcm.0.play.vchanrate=44100
 EOF
 
-#If running on HardenedBSD, configure applications to work.
-set HARD = `sysctl hardening.version`
-if ( $status == 0 ) then
-	#install secadm from secadm src (requires HardenedBSD Source to be installed)
-	pkg install git-lite
-	cd /usr
-	git clone https://github.com/hardenedbsd/secadm.git
-	cd secadm/
-	git pull && make && make install
-
-	#setup secadm module to load at boot
-	echo 'secadm_load="YES"' >> /boot/loader.conf
-
-	#create the current application rules for secadm
-	#based on v0.3 rules from https://github.com/HardenedBSD/secadm-rules
-	cat << EOF >> /usr/local/etc/secadm.rules
-secadm {
-        pax {
-                path: "/usr/local/share/chromium/chrome",
-                  mprotect: false,
-                  pageexec: false,
-        },
-        pax {
-                path: "/usr/local/lib/libreoffice/program/soffice.bin",
-                  mprotect: false,
-                  pageexec: false,
-        },
-}
-EOF
-
-	chmod 0500 /usr/local/etc/secadm.rules
-	chflags schg /usr/local/etc/secadm.rules
-
-	#set secadm to start at bootime
-	sysrc secadm_enable="YES"
-fi
 
 #reboot for all modules and services to start
 reboot
