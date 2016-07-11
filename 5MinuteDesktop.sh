@@ -2,7 +2,7 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 1.5
+# Version: 1.6
 #
 # Tested on FreeBSD/HardenedBSD default install with ports and source code
 # Tested on VirtualBox with Guest Drivers Installed
@@ -114,18 +114,14 @@ kern.ipc.shm_allow_removed=1
 #Don't allow CTRL+ALT+DELETE
 hw.syscons.kbd_reboot=0
 # fix for HDA sound playing too fast/too slow. only if needed.
-dev.pcm.0.play.vchanrate=44100
+# dev.pcm.0.play.vchanrate=44100
 EOF
 
 #If running on HardenedBSD, configure applications to work.
 set HARD = `sysctl hardening.version`
 if ( $status == 0 ) then
-	#install secadm from secadm src (requires HardenedBSD Source to be installed)
-	pkg install git-lite
-	cd /usr
-	git clone https://github.com/hardenedbsd/secadm.git
-	cd secadm/
-	git pull && make && make install
+	#install secadm package
+	pkg install -y secadm
 
 	#setup secadm module to load at boot
 	echo 'secadm_load="YES"' >> /boot/loader.conf
