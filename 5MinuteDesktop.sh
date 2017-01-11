@@ -2,7 +2,7 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 1.6
+# Version: 1.7
 #
 # Tested on FreeBSD/HardenedBSD default install with ports and source code
 # Tested on VirtualBox with Guest Drivers Installed
@@ -92,7 +92,7 @@ pkg install -y xorg-drivers
 endif
 
 #Other stuff to make life easier, looping in case packages change
-foreach i ( rxvt-unicode zsh sudo chromium tmux libreoffice4 gnupg pinentry-curses enaspell en-hunspell ) 
+foreach i ( rxvt-unicode zsh sudo firefox chromium tmux libreoffice4 gnupg pinentry-curses enaspell en-hunspell ) 
 pkg install -y $i
 end
 
@@ -123,9 +123,9 @@ if ( $status == 0 ) then
 	#install secadm from secadm src (requires HardenedBSD Source to be installed)
  	pkg install -y git-lite
  	cd /usr
- 	git clone https://github.com/hardenedbsd/secadm.git
+ 	/usr/local/bin/git clone https://github.com/hardenedbsd/secadm.git
  	cd /usr/secadm/
- 	git pull && make && make install
+ 	/usr/local/bin/git pull && make && make install
 
 	#setup secadm module to load at boot
 	echo 'secadm_load="YES"' >> /boot/loader.conf
@@ -136,6 +136,11 @@ if ( $status == 0 ) then
 secadm {
         pax {
                 path: "/usr/local/share/chromium/chrome",
+                  mprotect: false,
+                  pageexec: false,
+        },
+        pax {
+                path: "/usr/local/lib/firefox/firefox",
                   mprotect: false,
                   pageexec: false,
         },
