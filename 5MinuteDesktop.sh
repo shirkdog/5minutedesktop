@@ -2,7 +2,7 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 1.7
+# Version: 1.8
 #
 # Tested on FreeBSD/HardenedBSD default install with ports and source code
 # Tested on VirtualBox with Guest Drivers Installed
@@ -92,7 +92,7 @@ pkg install -y xorg-drivers
 endif
 
 #Other stuff to make life easier, looping in case packages change
-foreach i ( rxvt-unicode zsh sudo firefox chromium tmux libreoffice4 gnupg pinentry-curses enaspell en-hunspell ) 
+foreach i ( xterm zsh sudo firefox chromium tmux libreoffice4 gnupg pinentry-curses enaspell en-hunspell ) 
 pkg install -y $i
 end
 
