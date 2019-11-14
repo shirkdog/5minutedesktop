@@ -2,10 +2,11 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 1.8
+# Version: 2.0
 #
 # Tested on FreeBSD/HardenedBSD default install with ports and source code
 # Tested on VirtualBox with Guest Drivers Installed
+# Tested on VMware with Guest Drivers Installed
 # Tested on and works poorly with NVIDIA Cards (default X drivers are used)
 # 
 # Copyright (c) 2016, Michael Shirk
@@ -81,18 +82,22 @@ else if ($WM == "fluxbox") then
 endif
 
 set VBOX = `dmesg|grep -oe VBOX|uniq`
+set VMWARE = `sysctl -e kern.vm_guest|grep -i vmware`
 #If running on Vbox, setup services
 if ( "$VBOX" == "VBOX" ) then
         pkg install -y virtualbox-ose-additions
 	sysrc vboxguest_enable="YES"
 	sysrc vboxservice_enable="YES"
+#If running on VMware, install video driver
+else if ( "$VMWARE" == "vmware") then
+	pkg install -y xf86-video-vmware
 else
 #Otherwise, install failsafe drivers with vesa
 pkg install -y xorg-drivers
 endif
 
 #Other stuff to make life easier, looping in case packages change
-foreach i ( xterm zsh sudo firefox chromium tmux libreoffice4 gnupg pinentry-curses enaspell en-hunspell ) 
+foreach i ( xterm zsh sudo firefox chromium tmux libreoffice gnupg pinentry-curses enaspell en-hunspell ) 
 pkg install -y $i
 end
 
@@ -120,44 +125,38 @@ EOF
 #If running on HardenedBSD, configure applications to work.
 set HARD = `sysctl hardening.version`
 if ( $status == 0 ) then
-	#install secadm from secadm src (requires HardenedBSD Source to be installed)
- 	pkg install -y git-lite
- 	cd /usr
- 	/usr/local/bin/git clone https://github.com/hardenedbsd/secadm.git
- 	cd /usr/secadm/
- 	/usr/local/bin/git pull && make && make install
+        #HardenedBSD has hbsdcontrol for configuration of hardening features.
+        #This will create a configuration script for which /etc/rc.local 
+        #will call on system startup to change security settings.
 
-	#setup secadm module to load at boot
-	echo 'secadm_load="YES"' >> /boot/loader.conf
+        cat << EOF > /etc/hbsdcontrol.sh
+#!/bin/sh
 
-	#create the current application rules for secadm
-	#based on v0.3 rules from https://github.com/HardenedBSD/secadm-rules
-	cat << EOF >> /usr/local/etc/secadm.rules
-secadm {
-        pax {
-                path: "/usr/local/share/chromium/chrome",
-                  mprotect: false,
-                  pageexec: false,
-        },
-        pax {
-                path: "/usr/local/lib/firefox/firefox",
-                  mprotect: false,
-                  pageexec: false,
-        },
-        pax {
-                path: "/usr/local/lib/libreoffice/program/soffice.bin",
-                  mprotect: false,
-                  pageexec: false,
-        },
-}
+HBSDCTRL="hbsdcontrol"
+
+#OPTIONS
+#<feature> := (aslr|pageexec|mprotect|segvguard|disallow_map32bit|shlibrandom)"
+
+#firefox
+\${HBSDCTRL} pax disable mprotect /usr/local/lib/firefox/firefox
+\${HBSDCTRL} pax disable pageexec /usr/local/lib/firefox/firefox
+\${HBSDCTRL} pax disable mprotect /usr/local/lib/firefox/plugin-container
+\${HBSDCTRL} pax disable pageexec /usr/local/lib/firefox/plugin-container
+#chromium
+\${HBSDCTRL} pax disable mprotect /usr/local/share/chromium/chrome
+\${HBSDCTRL} pax disable pageexec /usr/local/share/chromium/chrome
+#libreoffice
+\${HBSDCTRL} pax disable mprotect /usr/local/lib/libreoffice/program/soffice.bin
+\${HBSDCTRL} pax disable pageexec /usr/local/lib/libreoffice/program/soffice.bin
+
 EOF
 
-	chmod 0500 /usr/local/etc/secadm.rules
-	chflags schg /usr/local/etc/secadm.rules
-
-	#set secadm to start at bootime
-	sysrc secadm_enable="YES"
-fi
+        chmod 0500 /etc/hbsdcontrol.sh
+        chflags schg /etc/hbsdcontrol.sh
+	echo "#Run hbsdcontrol.sh" >> /etc/rc.local
+	echo "/etc/hbsdcontrol.sh" >> /etc/rc.local
+        chmod 0500 /etc/rc.local
+endif
 
 #reboot for all modules and services to start
 reboot
