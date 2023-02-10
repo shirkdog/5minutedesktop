@@ -2,14 +2,14 @@
 #
 # FreeBSD 5 Minute Desktop Build
 #
-# Version: 2.0
+# Version: 2.1
 #
 # Tested on FreeBSD/HardenedBSD default install with ports and source code
 # Tested on VirtualBox with Guest Drivers Installed
 # Tested on VMware with Guest Drivers Installed
 # Tested on and works poorly with NVIDIA Cards (default X drivers are used)
 # 
-# Copyright (c) 2016, Michael Shirk
+# Copyright (c) 2016-2023 Michael Shirk
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -39,7 +39,7 @@ set WM = "NONE"
 
 if ($#argv == 0) then
 	echo "FreeBSD 5 Minute Desktop Build"
-	echo "Usage: $argv[0] i3 or fluxbox"
+	echo "Usage: $argv[0] (i3 or fluxbox or xfce)"
 	exit 13
 endif
 
@@ -51,9 +51,13 @@ if ($argv[1] == "i3") then
 	set WM = "i3"
 endif
 
+if ($argv[1] == "xfce") then 
+	set WM = "xfc3"
+endif
+
 if ("$WM" == "NONE") then
 	echo "FreeBSD 5 Minute Desktop Build"
-	echo "Usage: $argv[0] i3 or fluxbox"
+	echo "Usage: $argv[0] (i3 or fluxbox or xfce)"
 	exit 13
 endif
 
@@ -79,6 +83,12 @@ else if ($WM == "fluxbox") then
 		echo "/usr/local/bin/fluxbox" >> /usr/home/$dir/.xinitrc
 		chown $dir /usr/home/$dir/.xinitrc
 	end
+else if ($WM == "xfce") then
+	pkg install -y xfce
+	foreach dir (`ls /usr/home`)
+		echo "/usr/local/bin/xfce" >> /usr/home/$dir/.xinitrc
+		chown $dir /usr/home/$dir/.xinitrc
+	end
 endif
 
 set VBOX = `dmesg|grep -oe VBOX|uniq`
@@ -97,7 +107,7 @@ pkg install -y xorg-drivers
 endif
 
 #Other stuff to make life easier, looping in case packages change
-foreach i ( xterm zsh sudo firefox chromium tmux libreoffice gnupg pinentry-curses enaspell en-hunspell ) 
+foreach i ( xterm zsh sudo firefox chromium xclip maim tmux libreoffice gnupg pinentry-curses enaspell en-hunspell ) 
 pkg install -y $i
 end
 
